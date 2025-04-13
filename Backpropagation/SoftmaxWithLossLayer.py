@@ -118,6 +118,11 @@ class SoftmaxWithLoss:
         - dx : softmaxの出力に対する勾配
         """
         batch_size = self.t.shape[0]
-        dx = (self.y - self.t) / batch_size
+        if self.t.size == self.y.size: # 教師データがone-hot vectorの場合
+            dx = (self.y - self.t) / batch_size
+        else:
+            dx = self.y.copy()
+            dx[np.arange(batch_size), self.t] -= 1
+            dx = dx / batch_size
 
         return dx
