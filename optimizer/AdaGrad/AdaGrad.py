@@ -25,7 +25,7 @@ class AdaGrad:
         - grads : 勾配（辞書形式）
         """
         # 初回の更新時にhを初期化
-        if self.h in None:
+        if self.h is None:
             self.h = {}
             for key, val in params.items():
                 self.h[key] = np.zeros_like(val)
