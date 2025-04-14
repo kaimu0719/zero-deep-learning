@@ -1,0 +1,6 @@
+Backpropagation/__pycache__/
+gradient/__pycache__/
+network/__pycache__/
+optimizer/*/__pycache__/
+utils/__pycache__/
+data/
