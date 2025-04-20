@@ -15,7 +15,7 @@ class Affine:
         """
         self.W = W # 重み行列
         self.b = b # バイアスベクトル
-        self.x = None # 入力データ
+        self.original_x_shape = None # 入力データ
         self.dW = None # 重みの勾配
         self.db = None # バイアスの勾配
 
@@ -31,10 +31,14 @@ class Affine:
         -------
         - out : 線形変換を適用した出力値
         """
-        self.x = x # 入力データを保存
-        out = np.dot(x, self.W) + self.b # 線形変換を計算
+        # テンソル対応
+        self.original_x_shape = x.shape
+        x = x.reshape(x.shape[0], -1)
+        self.x = x
 
-        return out # 出力値を返す
+        out = np.dot(self.x, self.W) + self.b
+
+        return out
     
     def backward(self, dout):
         """
@@ -52,4 +56,5 @@ class Affine:
         self.dW = np.dot(self.x.T, dout) # 重みの勾配を計算
         self.db = np.sum(dout, axis=0) # バイアスの勾配を計算
 
+        dx = dx.reshape(*self.original_x_shape)  # 入力データの形状に戻す（テンソル対応）
         return dx # 入力データの勾配を返す
