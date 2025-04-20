@@ -2,22 +2,33 @@ import numpy as np
 
 def softmax(x: np.ndarray):
     """
-    softmax関数 : 入力された値をsoftmax関数に通して確率分布に変換。
+    softmax関数
+    任意次元（ここでは1Dまたは2D）配列を受け取り、各サンプル（行）ごとに
+    確率分布へ正規化する関数。
+    - Σ_softmax(xᵢ) = 1 となる
+    - 値が大きいほど確率も大きくなる
+    - オーバーフロー対策のため、各サンプルの最大値を引いてからexpを計算
 
     Parameters
     ----------
-    - x : 入力値（Numpy配列）
-
+    x : np.ndarray
+        1 D → 形状（D,）
+        2 D → 形状（N, D） Nはバッチサイズ、Dはクラス
+    
     Returns
     -------
-    - y : softmax関数を通した出力値（Numpy配列）
+    np.ndarray
+        1 D 入力なら（D,）, 2 D 入力なら（N, D）のsoftmax出力
     """
-    c = np.max(x) # 入力値の最大値を取得
-    exp_x = np.exp(x - c) # オーバーフロー対策のため、最大値を引く
-    sum_exp_x = np.sum(exp_x)
-    y = exp_x / sum_exp_x
-
-    return y
+    if x.ndim == 2:
+        c = np.max(x, axis=1, keepdims=True) # 行ごとの最大
+        exp_x = np.exp(x - c)
+        sum_exp_x = np.sum(exp_x, axis=1, keepdims=True)
+        return exp_x / sum_exp_x # (N, D)
+    else: # 1次元の場合
+        c = np.max(x)
+        exp_x = np.exp(x - c)
+        return exp_x / np.sum(exp_x)
 
 def cross_entropy_error(y, t):
     """
@@ -106,23 +117,11 @@ class SoftmaxWithLoss:
         return self.loss
     
     def backward(self, dout=1):
-        """
-        逆伝播（backward propagation）: 出力側から伝わってきた勾配（dout）を、それぞれの入力値に伝える。
-
-        Parameters
-        ----------
-        - dout : 出力側から伝わってきた勾配
-    
-        Returns
-        -------
-        - dx : softmaxの出力に対する勾配
-        """
         batch_size = self.t.shape[0]
-        if self.t.size == self.y.size: # 教師データがone-hot vectorの場合
+        if self.t.size == self.y.size:          # one‑hot
             dx = (self.y - self.t) / batch_size
-        else:
+        else:                                   # ラベル
             dx = self.y.copy()
             dx[np.arange(batch_size), self.t] -= 1
-            dx = dx / batch_size
-
-        return dx
+            dx /= batch_size
+        return dx * dout
