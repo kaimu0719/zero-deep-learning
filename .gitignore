@@ -4,4 +4,5 @@ network/__pycache__/
 optimizer/*/__pycache__/
 utils/__pycache__/
 weight/__pycache__/
+train/__pycache__/
 data/
