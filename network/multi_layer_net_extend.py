@@ -9,6 +9,7 @@ from Backpropagation.ReLULayer import Relu
 from Backpropagation.SigmoidLayer import Sigmoid
 from Backpropagation.SoftmaxWithLossLayer import SoftmaxWithLoss
 from Backpropagation.BatchNormalization import BatchNormalization
+from Backpropagation.Dropout import Dropout
 
 from gradient.numerical import numerical_gradient
 
@@ -22,7 +23,7 @@ class MultiLayerNetExtend:
 
     def __init__(self, input_size, hidden_size_list, output_size,
                  activation='relu', weight_init_std='relu', weight_decay_lambda=0,
-                 use_batchnorm=False):
+                 use_batchnorm=False, use_dropout=False, dropout_ration=0.5):
         """
         ネットワークの"骨格"を組み立てるコンストラクタ
 
@@ -52,6 +53,7 @@ class MultiLayerNetExtend:
         self.hidden_layer_num = len(hidden_size_list) # 隠れ層の数
         self.weight_decay_lambda = weight_decay_lambda
         self.use_batchnorm = use_batchnorm
+        self.use_dropout = use_dropout
 
         # 全レイヤのパラメータ(W, b, γ, β)を格納する dict
         # keys : 'W1', 'b1', 'gamma1', 'beta1', ... と並ぶ
@@ -84,6 +86,9 @@ class MultiLayerNetExtend:
             
             # 活性化レイヤ
             self.layers[f'Activation_function{idx}'] = activation_layer[activation]()
+
+            if self.use_dropout:
+                self.layers[f'Dropout{idx}'] = Dropout(dropout_ration)
         
         # 出力層
         idx = self.hidden_layer_num + 1
