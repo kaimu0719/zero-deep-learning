@@ -9,7 +9,7 @@ from Backpropagation.ReLULayer import Relu
 from Backpropagation.SigmoidLayer import Sigmoid
 from Backpropagation.SoftmaxWithLossLayer import SoftmaxWithLoss
 from Backpropagation.BatchNormalization import BatchNormalization
-from Backpropagation.Dropout import Dropout
+from Backpropagation.DropoutLayer import Dropout
 
 from gradient.numerical import numerical_gradient
 
