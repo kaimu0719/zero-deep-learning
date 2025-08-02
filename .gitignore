@@ -6,3 +6,7 @@ utils/__pycache__/
 weight/__pycache__/
 train/__pycache__/
 data/
+
+# 学習済みモデルのパラメータ
+params.pkl
+deep_convnet_params.pkl
